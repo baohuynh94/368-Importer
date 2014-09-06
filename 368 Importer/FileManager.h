@@ -12,6 +12,7 @@
     UIAlertView *alert;
 }
 
+
 + (FileManager *)getSharedInstance;
 - (BOOL)removeFile:(NSString *)fileName;
 - (void)removeAllFile;

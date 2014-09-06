@@ -28,6 +28,9 @@
     [super viewDidLoad];
     passcodeNumber = 0;
     [_okBtn setEnabled:NO];
+    [_passcodeLabel setText:@""];
+    
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"IMG_00093.JPG"]]];
     
     [self setBorderColor:_okBtn];
     [self setBorderColor:_delBtn];
@@ -41,6 +44,18 @@
     [self setBorderColor:_eightBtn];
     [self setBorderColor:_nineBtn];
     [self setBorderColor:_zeroBtn];
+    [_passcodeLabel setTextColor:[UIColor colorWithWhite:1.0 alpha:0.2]];
+    [self updateButtonRect];
+    [self setOkBtnEnabled];
+}
+
+- (void)updateButtonRect {
+    CGSize screenSize = self.view.frame.size;
+    CGSize defaultSize = CGSizeMake(65, 65);
+    
+    [_fiveBtn setFrame:CGRectMake((screenSize.width/2)-(defaultSize.width/2), (screenSize.height/2)-(defaultSize.height/2), defaultSize.width, defaultSize.height)];
+    [_fourBtn setFrame:CGRectMake(30, (screenSize.height/2)-(defaultSize.height/2), defaultSize.width, defaultSize.height)];
+    [_sixBtn setFrame:CGRectMake(screenSize.width-defaultSize.width-30, (screenSize.height/2)-(defaultSize.height/2), defaultSize.width, defaultSize.height)];
     
 }
 
@@ -49,8 +64,8 @@
     view.layer.cornerRadius = view.frame.size.width / 2;
     view.clipsToBounds = YES;
     view.layer.borderWidth = 3.0f;
-    view.layer.borderColor = [UIColor blackColor].CGColor;
-    [view setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    view.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.5].CGColor;
+    [view setTitleColor:[UIColor colorWithWhite:1.0 alpha:0.5] forState:UIControlStateNormal];
     [view setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     [view setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     [view setBackgroundImage:[UIImage imageNamed:@"black_fx.png"] forState:UIControlStateHighlighted];
@@ -151,6 +166,7 @@
 - (IBAction)delBtn:(id)sender {
     passcodeNumber = 0;
     [_passcodeLabel setText:@""];
+    [self setOkBtnEnabled];
 }
 
 - (void)didReceiveMemoryWarning

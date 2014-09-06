@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "ViewerViewController.h"
 
 @interface ViewController ()
 
@@ -18,7 +19,6 @@
     UIImageView *playImg;
 }
 
-// Khi app vừa start lên
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -28,33 +28,61 @@
     _tableMedia.delegate = self;
     _tableMedia.dataSource = self;
     
+    // Set UIImage no file if no image/video in Document dir
     noFileImage = [[UIImageView alloc] initWithFrame:_tableMedia.frame];
     [noFileImage setContentMode:UIViewContentModeCenter];
-    [noFileImage setImage:[UIImage imageNamed:@"nodata.png"]];
+    [noFileImage setImage:[UIImage imageNamed:@"noimage.png"]];
     float screenSizeWidth = self.view.frame.size.width;
     float screenSizeHeight = self.view.frame.size.height;
-    refreshButton = [[BButton alloc] initWithFrame:CGRectMake((screenSizeWidth / 2) - 42, screenSizeHeight - 60, 84, 30)];
-    [refreshButton setColor:[UIColor orangeColor]];
+    UIImageView *imageLogo = [[UIImageView alloc] initWithFrame:CGRectMake((screenSizeWidth/2)-60, (screenSizeHeight/2)-100, 120, 120)];
+    [imageLogo setImage:[UIImage imageNamed:@"logo.png"]];
+    [noFileImage addSubview:imageLogo];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake((screenSizeWidth/2)-100, imageLogo.frame.size.height+imageLogo.frame.origin.y+20, 200, 18)];
+    [titleLabel setText:@"Không có ảnh hoặc video"];
+    [titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0]];
+    [titleLabel setTextColor:[UIColor whiteColor]];
+    [noFileImage addSubview:titleLabel];
+    UILabel *subtitleLabel = [[UILabel alloc] initWithFrame:CGRectMake((screenSizeWidth/2)-110, titleLabel.frame.size.height+titleLabel.frame.origin.y, 220, 100)];
+    [subtitleLabel setNumberOfLines:4];
+    [subtitleLabel setText:@"Hãy bắt đầu thêm ảnh bằng cách:\n- Cắm thiết bị vào iTunes.\n- Thêm ảnh và/hoặc video trong mục File Sharing của app 368 importer."];
+    [subtitleLabel setTextAlignment:NSTextAlignmentCenter];
+    [subtitleLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Thin" size:14.0]];
+    [subtitleLabel setTextColor:[UIColor whiteColor]];
+    [noFileImage addSubview:subtitleLabel];
+    
+    // Create refresh UI when user pull down table to refresh
+    refreshButton = [[UIButton alloc] initWithFrame:CGRectMake((screenSizeWidth / 2) - 42, screenSizeHeight - 60, 84, 30)];
+    refreshButton.layer.cornerRadius = 5.0f;
+    refreshButton.clipsToBounds = YES;
+    refreshButton.layer.borderWidth = 1.0f;
+    refreshButton.layer.borderColor = [UIColor whiteColor].CGColor;
     [refreshButton setTitle:@"Làm mới" forState:UIControlStateNormal];
+    [refreshButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [refreshButton setTitleColor:[UIColor colorWithRed:67 green:87 blue:112 alpha:1.0] forState:UIControlStateSelected];
+    [refreshButton setShowsTouchWhenHighlighted:YES];
     [refreshButton addTarget:self action:@selector(refreshData) forControlEvents:UIControlEventTouchUpInside];
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     [_tableMedia addSubview:refreshControl];
+    
+    // Load data to table
     [self loadData];
+    NSLog(@"%@", [[FileManager getSharedInstance] documentsPath]);
 }
 
-// Làm mới danh sách
+// Refresh tableView
 - (void)refresh:(UIRefreshControl *)refreshControl {
     [self loadData];
     [refreshControl endRefreshing];
 }
 
-// Số section
+// Set number of section: 2 (one for images, one for videos)
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 2;
 }
 
-// Số dòng trong mỗi section
+// Set rows for each section
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 0:
@@ -96,77 +124,34 @@
             UIImage *image = [UIImage imageWithCGImage:[imageGenerator copyCGImageAtTime:CMTimeMake(0, 1) actualTime:nil error:nil]];
             [(UIImageView*)[cell viewWithTag:100] setImage:image];
             [(UILabel *)[cell viewWithTag:101] setText:[videoList objectAtIndex:indexPath.row]];
-            [(UILabel *)[cell viewWithTag:105] setText:[[FileManager getSharedInstance] dateCreateAndSize:[imageList objectAtIndex:indexPath.row]]];
+            [(UILabel *)[cell viewWithTag:105] setText:[[FileManager getSharedInstance] dateCreateAndSize:[videoList objectAtIndex:indexPath.row]]];
         }
             break;
         default:
             break;
     }
-    
-//    UIButton *optionBtn = [[UIButton alloc] initWithFrame:CGRectMake(233, 0, 87, 30)];
-//    [optionBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//    [optionBtn setBackgroundColor:[UIColor blackColor]];
-//    [optionBtn setTitle:@"Tùy chọn" forState:UIControlStateNormal];
-//    [optionBtn addTarget:self action:@selector(onCustomAccessoryTapped:) forControlEvents:UIControlEventTouchUpInside];
-//    [cell addSubview:optionBtn];
-    
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        strCache = [imageList objectAtIndex:indexPath.row];
-    }
-    else if (indexPath.section == 1) {
-        strCache = [videoList objectAtIndex:indexPath.row];
-    }
-    UIAlertView *alr = [[UIAlertView alloc] initWithTitle:strCache message:@"" delegate:self cancelButtonTitle:@"Đóng" otherButtonTitles:@"Nhập", @"Xóa", nil];
-    [alr setTag:201];
-    [alr show];
-}
-
-//-(UITableViewCell *)parentCellForView:(id)theView
-//{
-//    id viewSuperView = [theView superview];
-//    while (viewSuperView != nil) {
-//        if ([viewSuperView isKindOfClass:[UITableViewCell class]]) {
-//            return (UITableViewCell *)viewSuperView;
-//        }
-//        else {
-//            viewSuperView = [viewSuperView superview];
-//        }
-//    }
-//    return nil;
-//}
-//
-//- (void)onCustomAccessoryTapped:(UIButton *)sender {
-//    UIButton *butn = (UIButton *)sender;
-//    UITableViewCell *cell = [self parentCellForView:butn];
-//    if (cell != nil) {
-//        NSIndexPath *indexPath = [_tableMedia indexPathForCell:cell];
-//        NSLog(@"show detail for item at row %d and section: %d", indexPath.row, indexPath.section);
-//    }
-//}
-
-// Tiêu đề mỗi section ảnh và video
+// Title for each section
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section==0) {
-        NSString *total = [[NSString alloc] initWithFormat:@"Số ảnh: %d - trong tổng số: %d", (int)[imageList count], (int)([imageList count]+[videoList count])];
+        NSString *total = [[NSString alloc] initWithFormat:@"Số ảnh: %d", (int)[imageList count]];
         return total;
     }
     else {
-        NSString *total = [[NSString alloc] initWithFormat:@"Số clip: %d - trong tổng số: %d", (int)[videoList count], (int)([imageList count]+[videoList count])];
+        NSString *total = [[NSString alloc] initWithFormat:@"Số clip: %d", (int)[videoList count]];
         return total;
     }
     
 }
 
-// Làm mới data
+// Refresh data
 - (void)refreshData {
     [self loadData];
 }
 
-// Tải danh sách vào dữ liệu
+// Load data from documents dir to NSArray
 - (void)loadData {
     [[FileManager getSharedInstance] copyInboxFiles];
     imageList = [[NSArray alloc] initWithArray:[[FileManager getSharedInstance] listOfImages]];
@@ -184,14 +169,14 @@
     [_tableMedia reloadData];
 }
 
-// Nút nhập ảnh và video
+// Import button
 - (IBAction)importMedia:(id)sender {
     UIAlertView *importAlert = [[UIAlertView alloc] initWithTitle:@"Chọn hành động" message:@"\n\n" delegate:self cancelButtonTitle:@"Đóng" otherButtonTitles:@"Nhập tất cả", @"Chỉ nhập ảnh", @"Chỉ nhập video", @"Xóa tất cả", @"Chỉ xóa ảnh", @"Chỉ xóa video", nil];
     [importAlert setTag:200];
     [importAlert show];
 }
 
-// Quản lý nút trên thông báo
+// AlertView Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 200) {
         switch (buttonIndex) {
@@ -276,6 +261,20 @@
     }
 }
 
+// Set slide to delete
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        if (indexPath.section == 0) {
+            [[FileManager getSharedInstance] removeFile:[imageList objectAtIndex:indexPath.row]];
+        }
+        else if (indexPath.section == 1) {
+            [[FileManager getSharedInstance] removeFile:[videoList objectAtIndex:indexPath.row]];
+        }
+        [self loadData];
+    }
+}
+
+// AppUtils - AlertView
 - (void)alertOKWithMessage:(NSString *)message {
     UIAlertView *alertOK = [[UIAlertView alloc] initWithTitle:message message:@"" delegate:self cancelButtonTitle:@"Đồng ý" otherButtonTitles:nil, nil];
     [alertOK show];
@@ -284,6 +283,24 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+// Create data for next view (preview image/video)
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"viewer"]) {
+        ViewerViewController *viewerView = [segue destinationViewController];
+        UITableViewCell *cell = (UITableViewCell *)sender;
+        NSIndexPath *indexPath = [_tableMedia indexPathForCell:cell];
+        if (indexPath.section==0) {
+            viewerView.filepath = [imageList objectAtIndex:indexPath.row];
+        }
+        else if (indexPath.section==1) {
+            viewerView.filepath = [videoList objectAtIndex:indexPath.row];
+        }
+        else {
+            viewerView.filepath = @"(trống)";
+        }
+    }
 }
 
 @end

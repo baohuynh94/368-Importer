@@ -27,6 +27,7 @@ FileManager *sharedInstance = nil;
     return filePath;
 }
 
+// Create list of image to NSArray from files in Documents path
 - (NSArray *)listOfImages {
     NSArray *rootDirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDir = rootDirs[0];
@@ -42,9 +43,8 @@ FileManager *sharedInstance = nil;
     return imageFiles;
 }
 
+// Remove file in document path
 - (BOOL)removeFile:(NSString *)fileName {
-    alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Đang xóa %@...", fileName] message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
-    [alert show];
     NSString *fileToRemove = [self nameInDocumentsDirectory:fileName];
     if ([[NSFileManager defaultManager] removeItemAtPath:fileToRemove error:nil]) {
         [alert dismissWithClickedButtonIndex:0 animated:YES];
@@ -54,9 +54,8 @@ FileManager *sharedInstance = nil;
     return NO;
 }
 
+// Remove all files in document path
 - (void)removeAllFile {
-    alert = [[UIAlertView alloc] initWithTitle:@"Đang xóa..." message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
-    [alert show];
     NSFileManager *fileMgr = [NSFileManager defaultManager];
     NSArray *rootDirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDir = rootDirs[0];
@@ -64,9 +63,9 @@ FileManager *sharedInstance = nil;
     for (NSString *filename in fileArray)  {
         [fileMgr removeItemAtPath:[documentsDir stringByAppendingPathComponent:filename] error:NULL];
     }
-    [alert dismissWithClickedButtonIndex:0 animated:YES];
 }
 
+// List all videos extension .mp4 or .mov from document path to NSArray
 - (NSArray *)listOfVideos {
     NSArray *rootDirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDir = rootDirs[0];
@@ -82,6 +81,7 @@ FileManager *sharedInstance = nil;
     return imageFiles;
 }
 
+// Copy files in Inbox dir to Documents dir when another App open images/videos from 368 importer
 - (void)copyInboxFiles {
     NSString *docPath = [self documentsPath];
     NSString *inboxPath = [docPath stringByAppendingPathComponent:@"Inbox"];
@@ -101,17 +101,32 @@ FileManager *sharedInstance = nil;
     }
 }
 
+// Create file att
 - (NSString *)dateCreateAndSize:(NSString *)fileName {
     NSString *returnData = [[NSString alloc] init];
     NSString *docPath = [self documentsPath];
     NSString *filePath = [docPath stringByAppendingPathComponent:fileName];
     NSDictionary *fileAtt = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
     NSString *date = [fileAtt objectForKey:NSFileCreationDate];
-    NSString *fileSize = [fileAtt objectForKey:NSFileSize];
-    returnData = [NSString stringWithFormat:@"Ngày tạo: %@\nKích thước: %@ bytes", date, fileSize];
+    double bytes = [[fileAtt objectForKey:NSFileSize] integerValue];
+    NSString *fileSize = (NSString *)[self convertByte:bytes];
+    returnData = [NSString stringWithFormat:@"Ngày tạo: %@\nKích thước: %@", date, fileSize];
     return returnData;
 }
 
+// Convert byte to other filesize
+- (id)convertByte:(double)value {
+    double convertedValue = value;
+    int multiplyFactor = 0;
+    NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",nil];
+    while (convertedValue > 1024) {
+        convertedValue /= 1024;
+        multiplyFactor++;
+    }
+    return [NSString stringWithFormat:@"%4.2f %@",convertedValue, [tokens objectAtIndex:multiplyFactor]];
+}
+
+// Get document path
 - (NSString *)documentsPath {
     NSArray *rootDirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDir = rootDirs[0];

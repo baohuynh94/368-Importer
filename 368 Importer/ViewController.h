@@ -17,7 +17,7 @@
     NSArray *imageList;
     NSArray *videoList;
     UIImageView *noFileImage;
-    BButton *refreshButton;
+    UIButton *refreshButton;
     ImportMedia *imprtMedia;
     FileManager *filMng;
 }

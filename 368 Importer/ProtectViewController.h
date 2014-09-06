@@ -13,19 +13,19 @@
     NSInteger passcodeNumber;
 }
 
-@property (strong, nonatomic) IBOutlet UILabel *passcodeLabel;
-@property (strong, nonatomic) IBOutlet UIButton *oneBtn;
-@property (strong, nonatomic) IBOutlet UIButton *twoBtn;
-@property (strong, nonatomic) IBOutlet UIButton *threeBtn;
-@property (strong, nonatomic) IBOutlet UIButton *fourBtn;
-@property (strong, nonatomic) IBOutlet UIButton *fiveBtn;
-@property (strong, nonatomic) IBOutlet UIButton *sixBtn;
-@property (strong, nonatomic) IBOutlet UIButton *sevenBtn;
-@property (strong, nonatomic) IBOutlet UIButton *eightBtn;
-@property (strong, nonatomic) IBOutlet UIButton *nineBtn;
-@property (strong, nonatomic) IBOutlet UIButton *zeroBtn;
-@property (strong, nonatomic) IBOutlet UIButton *delBtn;
-@property (strong, nonatomic) IBOutlet UIButton *okBtn;
+@property (readwrite) IBOutlet UILabel *passcodeLabel;
+@property (readwrite) IBOutlet UIButton *oneBtn;
+@property (readwrite) IBOutlet UIButton *twoBtn;
+@property (readwrite) IBOutlet UIButton *threeBtn;
+@property (readwrite) IBOutlet UIButton *fourBtn;
+@property (readwrite) IBOutlet UIButton *fiveBtn;
+@property (readwrite) IBOutlet UIButton *sixBtn;
+@property (readwrite) IBOutlet UIButton *sevenBtn;
+@property (readwrite) IBOutlet UIButton *eightBtn;
+@property (readwrite) IBOutlet UIButton *nineBtn;
+@property (readwrite) IBOutlet UIButton *zeroBtn;
+@property (readwrite) IBOutlet UIButton *delBtn;
+@property (readwrite) IBOutlet UIButton *okBtn;
 - (IBAction)oneBtn:(id)sender;
 - (IBAction)twoBtn:(id)sender;
 - (IBAction)threeBtn:(id)sender;

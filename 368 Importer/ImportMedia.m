@@ -8,11 +8,12 @@
 
 #import "ImportMedia.h"
 
+
 @implementation ImportMedia
 
+// Get allow from Setting.app for authorization image/video.
 - (BOOL)isAllow {
     ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
-    
     [lib enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
     } failureBlock:^(NSError *error) {
         if (error.code == ALAssetsLibraryAccessUserDeniedError) {
@@ -22,7 +23,6 @@
         }
     }];
     ALAuthorizationStatus status = [ALAssetsLibrary authorizationStatus];
-    
     if (status != ALAuthorizationStatusAuthorized) {
         alert = [[UIAlertView alloc] initWithTitle:@"Cảnh báo" message:@"Hãy cho phép 368 importer có quyền truy cập vào kho ảnh của bạn trong phần cài đặt!" delegate:nil cancelButtonTitle:@"Đóng" otherButtonTitles:nil, nil];
         [alert show];
@@ -33,6 +33,7 @@
     }
 }
 
+// Import file to camera roll
 - (void)importMedia:(NSString *)filename {
     if ([self isAllow]) {
         alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Đang nhập %@...", filename] message:@"" delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
@@ -49,13 +50,10 @@
             UIImageWriteToSavedPhotosAlbum(imgToImport, nil, nil, nil);
         }
         [alert dismissWithClickedButtonIndex:0 animated:YES];
-        [self alertOKWithMessage:[NSString stringWithFormat:@"Đã nhập %@", filename]];
-    }
-    else {
-        [self alertOKWithMessage:@"Lỗi xảy ra do ứng dụng không có quyền truy cập kho ảnh của bạn."];
     }
 }
 
+// AppUtils - Alert
 - (void)alertOKWithMessage:(NSString *)message {
     UIAlertView *alertOK = [[UIAlertView alloc] initWithTitle:message message:@"" delegate:self cancelButtonTitle:@"Đồng ý" otherButtonTitles:nil, nil];
     [alertOK show];

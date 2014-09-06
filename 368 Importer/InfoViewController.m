@@ -129,7 +129,7 @@
     [textView setTextAlignment:NSTextAlignmentCenter];
     [textView setTextColor:[UIColor whiteColor]];
     [textView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.0]];
-    [textView setText:[NSString stringWithFormat:@"Tên ứng dụng: 368 importer\nPhiên bản: 1.0\nViết bởi: @dino_phan\nPhiên bản iOS đang dùng: %@\n\nMọi đóp góp cho ứng dụng, bạn hãy liên hệ với mình qua email: baohuynh94@icloud.com hoặc số máy: 0917.451.500.\nXin cảm ơn!", [[UIDevice currentDevice] systemVersion]]];
+    [textView setText:[NSString stringWithFormat:@"Tên ứng dụng: 368 importer\nPhiên bản: 1.0\nBy: @dino_phan\nPhiên bản iOS đang dùng: %@\n\nMọi đóp góp cho ứng dụng, bạn hãy liên hệ với mình qua email: baohuynh94@icloud.com hoặc số máy: 0917.451.500.\nXin cảm ơn!", [[UIDevice currentDevice] systemVersion]]];
     
     [textView setFont:[UIFont fontWithName:@"HelveticaNeue-Thin" size:14.0]];
     [self.view addSubview:textView];
@@ -229,17 +229,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 - (IBAction)passcodeChange:(id)sender {
     UIAlertView *alertChangePasscode = [[UIAlertView alloc] initWithTitle:@"Đổi Passcode" message:@"Nhập passcode mới của bạn:" delegate:self cancelButtonTitle:@"Bỏ qua" otherButtonTitles:@"Thay đổi", nil];
